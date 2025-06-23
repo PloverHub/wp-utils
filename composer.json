@@ -1,5 +1,5 @@
 {
-  "name": "clarapress/components",
+  "name": "ploverhub/wp-utils",
   "description": "A list of reusable components we use across our WordPress projects",
   "keywords": ["wordpress utils", "wordpress", "wordpress-dev"],
   "minimum-stability": "dev",
@@ -7,14 +7,14 @@
   "authors": [
     {
       "name": "Wasseem Khayrattee",
-      "email": "clarapress.mailbox@wk.contact",
-      "homepage": "https://github.com/wkhayrattee"
+      "email": "wasseem@ploverhub.com",
+      "homepage": "https://github.com/ploverhub"
     }
   ],
   "type": "library",
   "autoload": {
     "psr-4": {
-      "ClaraPressComponents\\": "src/"
+      "PloverHubUtils\\": "src/"
     }
   }
 }

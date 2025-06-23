@@ -1,6 +1,6 @@
 <?php
 
-namespace ClaraPressComponents;
+namespace PloverHubUtils;
 
 class Utils
 {
@@ -15,19 +15,23 @@ class Utils
      *
      * @return string The file path if found, otherwise an empty string.
      */
-    public static function get_theme_file_path(string $file_name): string
+    public static function get_tpl_path(string $file_name): string
     {
-        $child_file_path = get_stylesheet_directory() . DIRECTORY_SEPARATOR . $file_name;
+        $file_name = ltrim($file_name, '/\\');
+
+        $child_file_path = trailingslashit(get_stylesheet_directory()) . $file_name;
         if (file_exists($child_file_path)) {
             return $child_file_path;
         }
 
-        $parent_file_path = get_template_directory() . DIRECTORY_SEPARATOR . $file_name;
+        $parent_file_path = trailingslashit(get_template_directory()) . $file_name;
         if (file_exists($parent_file_path)) {
             return $parent_file_path;
         }
 
-        error_log('Cannot load file: ' . $file_name);
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            trigger_error("PloverHubUtils: Cannot locate file: {$file_name}", E_USER_WARNING);
+        }
 
         return '';
     }
@@ -41,17 +45,29 @@ class Utils
      *
      * @param string $file_name The name of the file to load.
      */
-    public static function load_theme_file(string $file_name): void
+    public static function load_tpl(string $file_name): void
     {
-        $child_file_path = get_stylesheet_directory() . DIRECTORY_SEPARATOR . $file_name;
-        $parent_file_path = get_template_directory() . DIRECTORY_SEPARATOR . $file_name;
+        $file_name = ltrim($file_name, '/\\');
 
+        // Check in child theme first
+        $child_file_path = trailingslashit(get_stylesheet_directory()) . $file_name;
         if (file_exists($child_file_path)) {
-            include $child_file_path;
-        } elseif (file_exists($parent_file_path)) {
-            include $parent_file_path;
-        } else {
-            error_log('Cannot load file at: ' . $file_name);
+            include_once $child_file_path;
+
+            return;
+        }
+
+        // Then check in parent theme
+        $parent_file_path = trailingslashit(get_template_directory()) . $file_name;
+        if (file_exists($parent_file_path)) {
+            include_once $parent_file_path;
+
+            return;
+        }
+
+        // Log failure
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            trigger_error("PloverHubUtils: Cannot load file: {$file_name}", E_USER_WARNING);
         }
     }
 }
